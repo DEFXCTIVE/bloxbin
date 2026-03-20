@@ -55,15 +55,17 @@ public class BinController : ControllerBase
     [HttpPatch("{id}")]
     [Authorize]
 
-    public IActionResult UpdateBin(Guid id,[FromBody] UpdateBinDto updateBinDto)
+    public IActionResult UpdateBin(Guid id, [FromBody] UpdateBinDto updateBinDto)
     {
         // Implementation for updating a bin by ID
         User? user = _context.Users.Find(Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!));
-        if (user == null)        {
+        if (user == null)
+        {
             return Unauthorized();
         }
         Bin? bin = _context.Bins.Find(id);
-        if (bin == null)        {
+        if (bin == null)
+        {
             return NotFound();
         }
         if (bin.OwnerId != user.Id)
@@ -99,11 +101,13 @@ public class BinController : ControllerBase
     public IActionResult DeleteBin(Guid id)
     {
         User? user = _context.Users.Find(Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!));
-        if (user == null)        {
+        if (user == null)
+        {
             return Unauthorized();
         }
         Bin? bin = _context.Bins.Find(id);
-        if (bin == null)        {
+        if (bin == null)
+        {
             return NotFound();
         }
         if (bin.OwnerId != user.Id)
@@ -161,6 +165,10 @@ public class BinController : ControllerBase
 
         Bin? bin = _context.Bins.Find(id);
         if (bin == null)
+        {
+            return NotFound();
+        }
+        if (bin.ExpiresAt.HasValue && bin.ExpiresAt < DateTime.UtcNow)
         {
             return NotFound();
         }
