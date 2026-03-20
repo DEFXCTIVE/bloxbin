@@ -42,7 +42,7 @@ public class UserController : ControllerBase
     public ActionResult<User> GetUser(Guid id)
     {
         // Implementation for retrieving a user by ID
-        return Ok();
+        return _context.Users.Find(id) is User user ? Ok(new UserResponseDto { Id = user.Id, Name = user.Name }) : NotFound();
     }
 
     [HttpPatch("{id}")]
@@ -56,7 +56,15 @@ public class UserController : ControllerBase
     public IActionResult DeleteUser(Guid id)
     {
         // Implementation for deleting a user by ID
-        return Ok();
+        User? user = _context.Users.Find(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        _context.Users.Remove(user);
+        _context.SaveChanges();
+        return NoContent();
     }
 
     [HttpPost("Login")]
